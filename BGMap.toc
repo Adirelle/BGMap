@@ -1,0 +1,11 @@
+## Interface: 30300
+## Title: BGMap
+## Notes: Enhanced battleground map
+## Author: Adirelle
+## Version: 1.0
+## LoadOnDemand: 1
+## LoadWith: Blizzard_BattlefieldMinimap
+#-# SavedVariables:
+
+BGMap.lua
+
