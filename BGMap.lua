@@ -76,9 +76,8 @@ local MAPS = {
 
 local currentMap
 local function ZoneCheck()
-	local mapName = GetMapInfo()
-	if not mapName then return end
-	local newMap = MAPS[mapName]
+	WorldStateFrame_ToggleBattlefieldMinimap()
+	local newMap = MAPS[GetMapInfo() or false]
 	if newMap ~= currentMap then
 		currentMap = newMap
 		UpdateMap(not not currentMap, currentMap and currentMap.narrow)
@@ -93,4 +92,19 @@ BattlefieldMinimapTab:SetScript('OnUpdate', function()
 	ZoneCheck()
 	BattlefieldMinimapTab:SetScript('OnUpdate', nil)
 end)
+
+-- Override broken Blizzard code
+
+function WorldStateFrame_ToggleBattlefieldMinimap()
+	if not BattlefieldMinimap:IsShown() and WorldStateFrame_CanShowBattlefieldMinimap() then
+		BattlefieldMinimap:Show()
+	elseif BattlefieldMinimap:IsShown() then
+		BattlefieldMinimap:Hide()
+	end
+end
+
+function WorldStateFrame_CanShowBattlefieldMinimap()
+	local mode = tonumber(GetCVar("showBattlefieldMinimap")) or 0
+	return (mode > 0 and MAPS[GetMapInfo() or false] and true or false) or (mode == 2 and select(2, IsInInstance()) == "none")
+end
 
