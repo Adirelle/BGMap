@@ -69,8 +69,8 @@ local function UpdateMap()
 	end
 	BattlefieldMinimapCloseButton:Show()
 	local bonus = enable and 10 or 0
-	BattlefieldMinimap:SetWidth(56 * 4 * scale + bonus)
-	BattlefieldMinimap:SetHeight(56 * 3 * scale + bonus)
+	BattlefieldMinimap:SetWidth(224 * scale + bonus)
+	BattlefieldMinimap:SetHeight(150 * scale + bonus)
 	if not BattlefieldMinimap.resizing then
 		BattlefieldMinimap.resizing = true
 		BattlefieldMinimap_OnUpdate(BattlefieldMinimap, 0)
