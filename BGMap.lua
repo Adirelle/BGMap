@@ -6,98 +6,97 @@ All rights reserved.
 
 local addonName, addon = ...
 
-local enabled, narrowed
-
 local function ReanchorMap()
 	local x = BattlefieldMinimapTab:GetCenter() / BattlefieldMinimapTab:GetScale()
 	local side = (x > UIParent:GetWidth() / 2) and "RIGHT" or "LEFT"
-	local xOffset = narrowed and BattlefieldMinimap:GetWidth() / 4 or 0
+	local xOffset = BattlefieldMinimap1:IsShown() and 0 or BattlefieldMinimap:GetWidth() / 4
 	if side == "LEFT" then
 		xOffset = - xOffset
 	end
-	local yOffset = enabled and 0 or -5
+	local yOffset = BattlefieldMinimapBackground:IsShown() and -5 or 0
 	BattlefieldMinimap:ClearAllPoints()
 	BattlefieldMinimap:SetPoint("TOP"..side, BattlefieldMinimapTab, "BOTTOM"..side, xOffset, yOffset)
 end
 
 hooksecurefunc(BattlefieldMinimapTab, 'StopMovingOrSizing', ReanchorMap)
 
-BattlefieldMinimap.GetScale = function() return 1 end
+local DEFAULT_BG_MAP = { narrow = true, scale = 1.5 }
+local MAPS = {
+	ArathiBasin = DEFAULT_BG_MAP,
+	WarsongGulch = DEFAULT_BG_MAP,
+	AlteracValley = DEFAULT_BG_MAP,
+	IsleofConquest = DEFAULT_BG_MAP,
+	NetherstormArena = DEFAULT_BG_MAP,
+	StrandoftheAncients = DEFAULT_BG_MAP,
+	LakeWintergrasp = {	narrow = false, scale = 1 },
+}
 
-local function UpdateMap(enable, narrow, scale)
-	if enable and not enabled then
+local origShow = BattlefieldMinimap1.Show
+local origHide = BattlefieldMinimap1.Hide
+
+local narrowTextures = {
+		BattlefieldMinimap1,
+		BattlefieldMinimap4,
+		BattlefieldMinimap5,
+		BattlefieldMinimap8,
+		BattlefieldMinimap9,
+		BattlefieldMinimap12,
+}
+
+local function UpdateMap()
+	local currentMap = MAPS[GetMapInfo() or false]
+	local enable, narrow, scale = false, false, 1
+	if currentMap then
+		enable, narrow, scale = true, currentMap.narrow, currentMap.scale
+	end
+	if enable then
 		BattlefieldMinimapCorner:Hide()
 		BattlefieldMinimapBackground:Hide()
-		BattlefieldMinimap:SetScale(scale or 1.5)
-		enabled = true
-	elseif not enable and enabled then
-		BattlefieldMinimapCorner:Show()
-		BattlefieldMinimapBackground:Show()
-		BattlefieldMinimap:SetScale(1)
-		enabled = false
-	end
-	if narrow and not narrowed then
-		BattlefieldMinimap1:Hide()
-		BattlefieldMinimap4:Hide()
-		BattlefieldMinimap5:Hide()
-		BattlefieldMinimap8:Hide()
-		BattlefieldMinimap9:Hide()
-		BattlefieldMinimap12:Hide()
-
 		BattlefieldMinimapCloseButton:SetParent(BattlefieldMinimapTab)
 		BattlefieldMinimapCloseButton:ClearAllPoints()
-		BattlefieldMinimapCloseButton:SetPoint("BOTTOMRIGHT", -2, 2)
-
-		narrowed = true
-	elseif not narrow and narrowed then
-		BattlefieldMinimap1:Show()
-		BattlefieldMinimap4:Show()
-		BattlefieldMinimap5:Show()
-		BattlefieldMinimap8:Show()
-		BattlefieldMinimap9:Show()
-		BattlefieldMinimap12:Show()
-
+		BattlefieldMinimapCloseButton:SetWidth(24)
+		BattlefieldMinimapCloseButton:SetHeight(24)
+		BattlefieldMinimapCloseButton:SetPoint("BOTTOMRIGHT", BattlefieldMinimapTab, "BOTTOMRIGHT", -2, -2)
+		BattlefieldMinimapCloseButton:SetAlpha(1)
+	else
+		BattlefieldMinimapCorner:Show()
+		BattlefieldMinimapBackground:Show()
 		BattlefieldMinimapCloseButton:SetParent(BattlefieldMinimap)
+		BattlefieldMinimapCloseButton:SetWidth(32)
+		BattlefieldMinimapCloseButton:SetHeight(32)
 		BattlefieldMinimapCloseButton:ClearAllPoints()
-		BattlefieldMinimapCloseButton:SetPoint("TOPRIGHT", -2, 7)
-
-		narrowed = false
+		BattlefieldMinimapCloseButton:SetPoint("TOPRIGHT", BattlefieldMinimap, "TOPRIGHT", 2, 7)		
+	end
+	BattlefieldMinimapCloseButton:Show()
+	local bonus = enable and 10 or 0
+	BattlefieldMinimap:SetWidth(56 * 4 * scale + bonus)
+	BattlefieldMinimap:SetHeight(56 * 3 * scale + bonus)
+	if not BattlefieldMinimap.resizing then
+		BattlefieldMinimap.resizing = true
+		BattlefieldMinimap_OnUpdate(BattlefieldMinimap, 0)
+		BattlefieldMinimap.resizing = nil
+	end
+	if narrow then
+		for i, texture in pairs(narrowTextures) do
+			texture:Hide()
+			texture.Show = origHide
+		end
+	else
+		for i, texture in pairs(narrowTextures) do
+			texture.Show = origShow
+			texture:Show()
+		end
 	end
 	ReanchorMap()
 end
 
-local MAPS = {
-	ArathiBasin = {},
-	WarsongGulch = {},
-	AlteracValley = {},
-	IsleofConquest = {},
-	NetherstormArena = {},
-	StrandoftheAncients = {},
-	LakeWintergrasp = {	narrow = false, scale = 1 },
-}
-
-local currentMap
-local function ZoneCheck()
-	WorldStateFrame_ToggleBattlefieldMinimap()
-	local newMap = MAPS[GetMapInfo() or false]
-	if newMap ~= currentMap then
-		currentMap = newMap
-		if currentMap then
-			UpdateMap(true, currentMap.narrow == nil or currentMap.narrow, currentMap.scale)
-		else
-			UpdateMap(false)
-		end
-	end
-end
-
 -- Hooks
-hooksecurefunc('BattlefieldMinimap_Update', ZoneCheck)
+hooksecurefunc('BattlefieldMinimap_Update', UpdateMap)
 BattlefieldMinimapCloseButton:SetScript('OnClick', function() BattlefieldMinimap_Toggle() end)
 
 -- Small hack to have this executed on first visible frame
 BattlefieldMinimapTab:SetScript('OnUpdate', function()
-	ReanchorMap()
-	ZoneCheck()
+	UpdateMap()
 	BattlefieldMinimapTab:SetScript('OnUpdate', nil)
 end)
 
