@@ -89,9 +89,8 @@ end
 frame:RegisterEvent('PLAYER_ENTERING_WORLD')
 frame:RegisterEvent('ZONE_CHANGED')
 frame:RegisterEvent('ZONE_CHANGED_NEW_AREA')
+frame:RegisterEvent('WORLD_MAP_UPDATE')
 frame.PLAYER_ENTERING_WORLD = UpdateVisibility
 frame.ZONE_CHANGED = UpdateVisibility
 frame.ZONE_CHANGED_NEW_AREA = UpdateVisibility
-
-frame:RegisterEvent('ZONE_CHANGED_NEW_AREA')
-
+frame.WORLD_MAP_UPDATE = UpdateVisibility
