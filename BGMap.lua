@@ -92,19 +92,3 @@ BattlefieldMinimapTab:SetScript('OnUpdate', function()
 	ZoneCheck()
 	BattlefieldMinimapTab:SetScript('OnUpdate', nil)
 end)
-
--- Override broken Blizzard code
-
-function WorldStateFrame_ToggleBattlefieldMinimap()
-	if not BattlefieldMinimap:IsShown() and WorldStateFrame_CanShowBattlefieldMinimap() then
-		BattlefieldMinimap:Show()
-	elseif BattlefieldMinimap:IsShown() then
-		BattlefieldMinimap:Hide()
-	end
-end
-
-function WorldStateFrame_CanShowBattlefieldMinimap()
-	local mode = tonumber(GetCVar("showBattlefieldMinimap")) or 0
-	return (mode > 0 and MAPS[GetMapInfo() or false] and true or false) or (mode == 2 and select(2, IsInInstance()) == "none")
-end
-

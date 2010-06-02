@@ -1,0 +1,7 @@
+## Interface: 30300
+## Title: BGMap - loader
+## Notes: Enhanced battleground map
+## Author: Adirelle
+## Version: 1.0
+
+..\BGMap\Loader.lua
