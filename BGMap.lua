@@ -94,6 +94,14 @@ end
 hooksecurefunc('BattlefieldMinimap_Update', UpdateMap)
 BattlefieldMinimapCloseButton:SetScript('OnClick', function() BattlefieldMinimap_Toggle() end)
 
+-- Update more often
+BattlefieldMinimap:RegisterEvent("UPDATE_WORLD_STATES")
+BattlefieldMinimap:HookScript('OnEvent', function(self, event, ...)
+	if event == "UPDATE_WORLD_STATES" and BattlefieldMinimap:IsVisible() then
+		BattlefieldMinimap_Update()
+	end
+end)
+
 -- Small hack to have this executed on first visible frame
 BattlefieldMinimapTab:SetScript('OnUpdate', function()
 	UpdateMap()
@@ -112,3 +120,4 @@ local env = setmetatable({
 setfenv(BattlefieldMinimap_OnShow, env)
 setfenv(BattlefieldMinimap_OnEvent, env)
 setfenv(BattlefieldMinimap_OnUpdate, env)
+
