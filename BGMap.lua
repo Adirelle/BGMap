@@ -111,16 +111,3 @@ BattlefieldMinimapTab:SetScript('OnUpdate', function()
 	BattlefieldMinimapTab:SetScript('OnUpdate', nil)
 end)
 
--- Prevent the frame script to mess with the WorldMapFrame
-local SetMapToCurrentZone = SetMapToCurrentZone
-local env = setmetatable({
-	SetMapToCurrentZone = function()
-		if not WorldMapFrame:IsVisible() then
-			SetMapToCurrentZone()
-		end
-	end
-}, { __index = _G })
-setfenv(BattlefieldMinimap_OnShow, env)
-setfenv(BattlefieldMinimap_OnEvent, env)
-setfenv(BattlefieldMinimap_OnUpdate, env)
-
