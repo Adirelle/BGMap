@@ -28,6 +28,9 @@ local MAPS = {
 	IsleofConquest = DEFAULT_BG_MAP,
 	NetherstormArena = DEFAULT_BG_MAP,
 	StrandoftheAncients = DEFAULT_BG_MAP,
+	TwinPeaks = DEFAULT_BG_MAP,
+	GilneasBattleground2 = DEFAULT_BG_MAP,
+	TolBarad = {	narrow = false, scale = 1 },
 	LakeWintergrasp = {	narrow = false, scale = 1 },
 }
 
