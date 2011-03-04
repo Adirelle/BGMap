@@ -7,7 +7,7 @@ All rights reserved.
 local addonName, addon = ...
 
 local function InBattlefield()
-	return select(2, IsInInstance()) == "pvp" or GetMapInfo() == "LakeWintergrasp"
+	return select(2, IsInInstance()) == "pvp" or GetMapInfo() == "LakeWintergrasp" or GetMapInfo() == "TolBarad"
 end
 
 local function IsMapShown()
