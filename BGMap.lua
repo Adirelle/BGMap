@@ -30,7 +30,7 @@ local MAPS = {
 	StrandoftheAncients = DEFAULT_BG_MAP,
 	TwinPeaks = DEFAULT_BG_MAP,
 	GilneasBattleground2 = DEFAULT_BG_MAP,
-	TolBarad = {	narrow = false, scale = 1 },
+	TolBarad = { scale = 1 },
 	LakeWintergrasp = {	narrow = false, scale = 1 },
 }
 
