@@ -112,3 +112,75 @@ BattlefieldMinimapTab:SetScript('OnUpdate', function()
 	BattlefieldMinimapTab:SetScript('OnUpdate', nil)
 end)
 
+-- Team blip enhancement
+
+local function Blip_OnUpdate(self)
+	if GetTime() % 1 < 0.5 then
+		self.icon:SetVertexColor(1, 0, 0)
+	else
+		self.icon:SetVertexColor(self.r, self.g, self.b)
+	end
+end
+
+local function Blip_Update(self)
+	local player = self.unit or self.name
+	local r, g, b, a = 1, 1, 1, 1
+	if player then
+		if PlayerIsPVPInactive(player) then
+			r, g, b = 0.5, 0.2, 0.8
+		elseif UnitIsDeadOrGhost(player) then
+			r, g, b, a = 0.5, 0.5, 0.5, 0.5
+		else
+			local _, class = UnitClass(player)
+			local color = (CUSTOM_RAID_COLORS or RAID_CLASS_COLORS)[class]
+			if color then
+				r, g, b = color.r, color.g, color.b
+			end
+		end
+		if UnitAffectingCombat(player) then
+			self.r, self.g, self.b = r, g, b
+			self:SetScript('OnUpdate', Blip_OnUpdate)
+		else
+			self.delay = nil
+			self:SetScript('OnUpdate', nil)
+		end
+	end
+	self.icon:SetVertexColor(r, g, b, a)
+end
+
+local function Blip_OnEvent(self, event, unit)
+	if not unit or UnitIsUnit(unit, self.unit or self.name) then
+		Blip_Update(self)
+	end
+end
+
+local function Blip_OnShow(self)
+	self:RegisterEvent('UNIT_HEALTH')
+	self:RegisterEvent('UNIT_FLAGS')
+	self:RegisterEvent('UNIT_DYNAMIC_FLAGS')
+	Blip_Update(self)
+end
+
+local function Blip_OnHide(self)
+	self:UnregisterAllEvents()
+end
+
+local knownBlips = {}
+
+local function EnhanceBlip(self)
+	knownBlips[self] = true
+	self.icon:SetTexture([[Interface\MINIMAP\PartyRaidBlips]])
+	self.icon:SetTexCoord(0.875, 1, 0.25, 0.5)
+	self:HookScript('OnShow', Blip_OnShow)
+	self:HookScript('OnHide', Blip_OnHide)
+	self:HookScript('OnEvent', Blip_OnEvent)
+	if self:IsVisible() then
+		Blip_OnShow(self)
+	end
+end
+
+for i = 1, 4 do EnhanceBlip(_G["BattlefieldMinimapParty"..i]) end
+for i = 1, 40 do EnhanceBlip(_G["BattlefieldMinimapRaid"..i]) end
+
+hooksecurefunc("WorldMapUnit_Update", function(self) if knownBlips[self] then return Blip_Update(self) end end)
+
