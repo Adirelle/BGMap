@@ -98,6 +98,7 @@ hooksecurefunc('BattlefieldMinimap_Update', UpdateMap)
 BattlefieldMinimapCloseButton:SetScript('OnClick', function() BattlefieldMinimap_Toggle() end)
 
 -- Update more often
+BATTLEFIELD_MINIMAP_UPDATE_RATE = 0.2
 BattlefieldMinimap:RegisterEvent("UPDATE_WORLD_STATES")
 BattlefieldMinimap:HookScript('OnEvent', function(self, event, ...)
 	if event == "UPDATE_WORLD_STATES" and BattlefieldMinimap:IsVisible() then
