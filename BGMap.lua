@@ -145,6 +145,11 @@ local function Blip_Update(self)
 			self:SetScript('OnUpdate', nil)
 		end
 	end
+	if UnitInParty(player) then
+		self.icon:SetTexCoord(0.75, 0.875, 0.25, 0.5)
+	else
+		self.icon:SetTexCoord(0.75, 0.875, 0.75, 1)
+	end
 	self.icon:SetVertexColor(r, g, b, a)
 end
 
@@ -157,7 +162,7 @@ end
 local function Blip_OnShow(self)
 	self:RegisterEvent('UNIT_HEALTH')
 	self:RegisterEvent('UNIT_FLAGS')
-	self:RegisterEvent('UNIT_DYNAMIC_FLAGS')
+	self:RegisterEvent('PARTY_MEMBERS_CHANGED')
 	Blip_Update(self)
 end
 
@@ -170,7 +175,6 @@ local knownBlips = {}
 local function EnhanceBlip(self)
 	knownBlips[self] = true
 	self.icon:SetTexture([[Interface\MINIMAP\PartyRaidBlips]])
-	self.icon:SetTexCoord(0.875, 1, 0.25, 0.5)
 	self:HookScript('OnShow', Blip_OnShow)
 	self:HookScript('OnHide', Blip_OnHide)
 	self:HookScript('OnEvent', Blip_OnEvent)
